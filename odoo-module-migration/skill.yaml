@@ -1,0 +1,9 @@
+name: odoo-module-migration
+description: |
+  Odoo module migration using analyze-then-write approach.
+  Analyzes modules with parallel subagents, builds knowledge base,
+  then writes new migrated files without copying originals.
+  Use when migrating 5-10 custom modules with dependencies.
+version: 2.0.0
+author: Claude
+tags: [odoo, migration, module-migration, analyze-write]

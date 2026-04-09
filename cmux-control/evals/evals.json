@@ -1,0 +1,53 @@
+{
+  "skill_name": "cmux-control",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "List all windows in cmux and show me which one is currently focused",
+      "expected_output": "Should execute 'cmux list-windows' and 'cmux current-window' commands",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create a new terminal split on the right side of the current workspace and run 'htop' in it",
+      "expected_output": "Should execute 'cmux new-split right' followed by 'cmux send --surface <id> htop' with Enter key",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Open https://example.com in a new browser split in cmux",
+      "expected_output": "Should execute 'cmux new-surface --type browser --url https://example.com' or 'cmux browser open-split https://example.com'",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Send the text 'ls -la' to surface abc123 and press Enter",
+      "expected_output": "Should execute 'cmux send --surface abc123 ls -la' and 'cmux send-key --surface abc123 Enter'",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Show me the tree structure of all workspaces in cmux",
+      "expected_output": "Should execute 'cmux tree --all' command",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Navigate the browser in cmux to https://github.com and search for 'odoo'",
+      "expected_output": "Should execute browser commands: 'cmux browser goto https://github.com' then type and press enter",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Close the workspace with index 2 in cmux",
+      "expected_output": "Should execute 'cmux close-workspace --workspace 2'",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Rename the current workspace to 'Development'",
+      "expected_output": "Should execute 'cmux rename-workspace Development' (using current workspace)",
+      "files": []
+    }
+  ]
+}

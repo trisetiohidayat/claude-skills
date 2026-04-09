@@ -1,0 +1,5 @@
+name: odoo-migration
+description: Migrate Odoo modules from any version to any version using OCA tools + AI assistance
+version: 1.0.0
+author: Claude
+tags: [odoo, migration, upgrade]

@@ -1,0 +1,23 @@
+{
+  "skill_name": "odoo-module-fixing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Fix the error in roedl_sale_custom module, database roedl, config odoo19.conf. Error: 'NoneType' object has no attribute 'action_confirm' when confirming sale order. Make sure to test thoroughly until no errors remain.",
+      "expected_output": "Should create team with QA, Analyst, Developer agents on ports 8143, 8144, 8145. Should iterate: Developer fixes → QA tests → verify. Continue loop until module upgrades without error AND all tests pass with ZERO failures. Use stop_after_init after each upgrade.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Module roedl_stock_custom has issues with stock picking validation - please fix and verify until completely error-free. Use database roedl_test and config odoo19.conf",
+      "expected_output": "Should spawn team, iterate fixing until module upgrade passes and all tests pass with zero failures",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "There's a bug in roedl_account module - the invoice workflow approval is broken. Fix it on database roedl_prod with config odoo19.conf. This affects the approval process so need business validation. Continue testing until completely fixed with no errors.",
+      "expected_output": "Should create team, identify business process impact (invoice approval), iterate until upgrade passes + tests pass + business confirmed. Max 10 iterations.",
+      "files": []
+    }
+  ]
+}

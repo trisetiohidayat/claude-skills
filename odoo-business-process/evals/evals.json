@@ -1,0 +1,53 @@
+{
+  "skill_name": "odoo-business-process",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Apa saja modul yang terinstall di database ini? Berikan ringkasan berdasarkan kategori (accounting, sales, purchase, inventory, dll)",
+      "expected_output": "List modul terinstall berdasarkan kategori dengan penjelasan fungsi masing-masing",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Bagaimana alur proses Sales Order sampai menjadi Invoice di Odoo? Jelaskan model-model yang terlibat dan relasinya",
+      "expected_output": "Penjelasan alur sales dengan model yang terlibat (sale.order, account.move, stock.picking) dan relasi antar model",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Saya ingin memahami proses Down Payment Voucher (DPV) di sistem ini. Bagaimana DPV bekerja dan modul apa yang menghandle-nya?",
+      "expected_output": "Penjelasan proses DPV dengan identifikasi modul ark_dpv, model ark.dpv, dan alur kerja",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Modul apa saja yang terinstall untuk accounting? Apakah ada modul kustomisasi untuk accounting?",
+      "expected_output": "List modul accounting yang terinstall termasuk ark_account, ark_account_cashflow, dll dengan fungsi masing-masing",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Bagaimana Purchase Order prosesnya di sistem ini? Dari RFQ sampai payment",
+      "expected_output": "Penjelasan lengkap alur purchase dengan model (purchase.order, account.move, stock.picking) dan flow-nya",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Apakah ada modul shipment di sistem ini? Bagaimana cara kerja shipment tracking?",
+      "expected_output": "Identifikasi ark_shipment jika terinstall, penjelasan model ark.shipment dan integrasi dengan stock",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Saya mau tau modul apa saja yang meng-extend sale.order dan field apa saja yang ditambahkan",
+      "expected_output": "Daftar modul yang extend sale.order dengan field custom yang ditambahkan",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Bagaimana alur return barang (Debit Return Voucher) di sistem ini?",
+      "expected_output": "Penjelasan proses DRV dengan modul ark_drv dan alur kerja",
+      "files": []
+    }
+  ]
+}

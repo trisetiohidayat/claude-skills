@@ -1,0 +1,23 @@
+{
+  "skill_name": "odoo-custom-docs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Document the custom Odoo modules in /path/to/custom_modules",
+      "expected_output": "Markdown files with overview, models, views, business logic, security, menus",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Generate documentation for our company's custom addons at /opt/odoo/custom_addons, output to ./docs",
+      "expected_output": "6 Markdown files: 01_overview.md, 02_custom_models.md, 03_custom_views.md, 04_business_logic.md, 05_security_rules.md, 06_menu_structure.md",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "What customizations do we have in our Odoo installation? The modules are in /home/odoo/my_custom_modules",
+      "expected_output": "Documentation of all custom modules including models, fields, views, methods, security rules, and menus",
+      "files": []
+    }
+  ]
+}

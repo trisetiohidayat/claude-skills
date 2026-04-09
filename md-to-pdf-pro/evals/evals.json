@@ -1,0 +1,26 @@
+{
+  "skill_name": "md-to-pdf-pro",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Convert file /Users/tri-mac/project/porting/migration_20260322_190706/upgrade-report-summary.md ke PDF. Simpan hasilnya di /Users/tri-mac/project/porting/migration_20260322_190706/upgrade-report-summary-pro.pdf",
+      "expected_output": "PDF file yang dihasilkan harus memiliki: tabel dengan column widths yang proporsional, URLs yang wrap dengan benar, headings dengan styling berwarna, page numbers, dan checkbox list yang rapi.",
+      "files": ["/Users/tri-mac/project/porting/migration_20260322_190706/upgrade-report-summary.md"]
+    },
+    {
+      "id": 2,
+      "prompt": "Buatkan PDF dari file /Users/tri-mac/project/porting/migration_20260322_190706/upgrade_logs/run_001/changes.md dengan title 'Upgrade Changes'. Simpan ke /Users/tri-mac/project/porting/migration_20260322_190706/changes-pro.pdf",
+      "expected_output": "PDF dengan formatting profesional, tabel tidak pecah antar halaman, dan semua element MD ter-render dengan benar.",
+      "files": ["/Users/tri-mac/project/porting/migration_20260322_190706/upgrade_logs/run_001/changes.md"]
+    },
+    {
+      "id": 3,
+      "prompt": "Gabungkan kedua file MD (upgrade-report-summary.md dan changes.md) menjadi satu PDF bernama combined-report.pdf",
+      "expected_output": "Single PDF yang berisi kedua dokumen dengan page break di antaranya.",
+      "files": [
+        "/Users/tri-mac/project/porting/migration_20260322_190706/upgrade-report-summary.md",
+        "/Users/tri-mac/project/porting/migration_20260322_190706/upgrade_logs/run_001/changes.md"
+      ]
+    }
+  ]
+}

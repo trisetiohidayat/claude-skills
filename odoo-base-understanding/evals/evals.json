@@ -1,0 +1,35 @@
+{
+  "skill_name": "odoo-base-understanding",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Bagaimana cara kerja method action_confirm di sale.order? Saya ingin tahu flow lengkap dari klik button sampai selesai",
+      "expected_output": "Penjelasan code flow: button XML → method action_confirm() → validasi → update state → _action_launch_stock_rule → _send_order_email → return",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Di mana saya harus override jika ingin menambahkan validasi tambahan saat confirm Sale Order? Berikan contoh extension point yang tepat",
+      "expected_output": "Identifikasi extension point: override action_confirm dengan super() call, atau override _action_launch_stock_rule sebelum/sesudah",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Apakah ada override untuk sale.order di custom_addons_19/roedl? Saya ingin tahu apakah ada kustomisasi yang sudah dilakukan",
+      "expected_output": "Hasil pencarian di custom_addons_19/roedl/ dengan Grep tool, identifikasi model/field/method yang di-override",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Bagaimana relasi antara sale.order, sale.order.line, stock.picking, dan account.move? Saya ingin memahami model relationships",
+      "expected_output": "Diagram relasi: sale.order → sale.order.line (one2many), sale.order → stock.picking (one2many), sale.order → account.move (one2many via invoice_ids)",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Apa yang terjadi saat saya klik button 'Create Invoice' di Sale Order? Trace code flow dari view sampai model",
+      "expected_output": "Penjelasan flow: button di XML → _create_invoices method → buat account.move → update invoice_status → return",
+      "files": []
+    }
+  ]
+}

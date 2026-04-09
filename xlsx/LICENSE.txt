@@ -1,0 +1,17 @@
+Anthropic PBC and its affiliates ("Anthropic") are the sole owners and rights holders of this
+material. You are authorized to use this material for your internal, informational, and
+non-commercial purposes only.
+
+You may not extract, reproduce, translate, modify, adapt, change the formatting or
+presentation, create derivative works from, distribute, sell, transfer, publicly display,
+publicly perform, broadcast, or stream this material to any third party, including
+without limitation, for purposes of training a language model or machine learning algorithm,
+without the prior written consent of Anthropic.
+
+Any permitted reproduction must include this notice in its entirety.
+
+Links to Anthropic's consumer terms (anthropic.com/terms) and commercial terms
+(anthropic.com/commercial-terms) are included for reference.
+
+For inquiries about uses not listed above, contact us through the Anthropic website
+(anthropic.com/contact).
