@@ -1,0 +1,56 @@
+# Odoo Migration Artifacts
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# C extensions
+*.c
+*.o
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Odoo-specific
+*.po~
+*.pot~
+*.pot
+*.mo
+/migrations/
+*.dump
+*.sql
+*.pg
+*.backup
+*.bak
+*.tmp/
+
+# Logs
+*.log
+odoo.log
+
+# Reports & Exports
+*.xlsx
+*.csv
+*.pdf
+
+# Migration scripts output
+output/
+results/
+reports/
