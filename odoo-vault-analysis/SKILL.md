@@ -1,15 +1,18 @@
 ---
 name: odoo-vault-analysis
 description: >
-  Analisis Odoo 19 menggunakan vault Obsidian + source code cross-reference.
-  TRIGGER ketika user bertanya tentang:
-  - Cara kerja model/field/API Odoo 19 (e.g. "explain how res.partner.bank works", "apa itu service_tracking")
-  - Arsitektur modul Odoo (e.g. "how does sale_project relate to project", "flow SO ke invoice")
-  - Source code investigation (e.g. "where is _timesheet_service_generation defined")
-  - Best practices Odoo (e.g. "best practice untuk state workflow", "pattern untuk computed field")
-  - Dokumentasi modul (e.g. "jelaskan module stock", "purchase order flow")
-  - Perbandingan fitur antar modul Odoo
-  JANGAN trigger untuk pertanyaan umum yang tidak terkait Odoo 19.
+  BUAT dan PERBAIKI dokumentasi vault Obsidian untuk Odoo.
+  TRIGGER ketika:
+  - User meminta untuk MENAMBAHKAN topik baru ke vault (misal: "document the l10n_id module", "tambahkan accounting workflow")
+  - User meminta MEMPERBAIKI vault yang kurang lengkap/kurang akurat
+  - odoo-vault-base-context mendeteksi topik yang belum terdokumentasi DAN user menjawab "Ya" untuk membuat vault
+  - User meminta analisis deep-dive yang TUJUANNYA membuat file vault baru
+
+  JANGAN trigger dari skill ini untuk pertanyaan biasa tentang Odoo (gunakan odoo-vault-base-context untuk itu).
+  JANGAN trigger jika user hanya butuh pemahaman umum tanpa tujuan membuat vault.
+
+  Tujuan skill ini: baca source code → buat/update file vault → vault makin lengkap.
+  Skill terpisah odoo-vault-base-context menangani: baca vault → berikan konteks ke AI untuk respons.
 ---
 
 # Odoo Vault Analysis Skill

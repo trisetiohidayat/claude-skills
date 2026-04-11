@@ -653,6 +653,28 @@ python paths['odoo']['bin'] -d paths['database']['name'] --test-tags=http --test
 
 ---
 
+## Post-Upgrade: Manual Action Tasks
+
+**SETELAH upgrade database selesai** (restore dari upgraded.zip), ada **10 kategori manual action tasks** yang perlu dilakukan karena tidak bisa di-handle oleh proses upgrade otomatis.
+
+**Reference file:** `manual_action_task.md` (bundled reference — read when needed)
+
+**Quick summary:**
+1. Custom modules (7) — Migrasi atau disable
+2. Disabled views (23) — Rekreasi atau hapus
+3. Custom financial reports — Rekreasi manual
+4. Partner/pricelist cross-company — Reassign
+5. Time off allocations (2) — Re-create
+6. ir.actions.server field renames — Update
+7. Private address handling — Klik "Recycle"
+8. Mail alias domain migration — Verify
+9. Missing filestore files — Restore jika penting
+10. Partner/commercial partner alignment — Evaluate
+
+**IMPORTANT:** Jangan restore ke production sebelum semua manual action tasks selesai di staging!
+
+---
+
 ## Common Odoo 19 View Issues (Post-Migration)
 
 ### 1. View Type `<tree>` Deprecated
