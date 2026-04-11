@@ -1,155 +1,120 @@
-# Odoo Module Migration Skill
+# Claude Code Skills Library
 
-Claude Code skill for migrating Odoo custom module code between versions with intelligent breaking changes analysis.
+A collection of Claude Code skills for Odoo 19 development, migration, and operations.
 
-## Features
+## Skills Overview
 
-- **Version Comparison** - Compare old vs new Odoo/Enterprise code to identify breaking changes
-- **Per-Module Migration** - Migrate each module individually with dependency tracking
-- **Knowledge Base** - Generate comprehensive breaking changes documentation
-- **Manual Review Guide** - Create per-module checklist for business process changes
-- **CLAUDE.md Generation** - Create context file for ongoing migration
-- **Migration Tracking** - Track progress per module (COMPLETED/NEEDS REVIEW/FAILED)
+### Odoo 19 Code Generation (`odoo19-*`)
 
-## Scope
+50+ skills for generating Odoo 19 components:
 
-This skill handles **module code migration only**. For database migration, use the separate `odoo-db-migration` skill.
+| Category | Skills |
+|----------|--------|
+| Models | `odoo19-model-new`, `odoo19-model-inherit`, `odoo19-model-abstract`, `odoo19-model-transient` |
+| Fields | `odoo19-field-add`, `odoo19-field-compute`, `odoo19-field-relational`, `odoo19-field-selection` |
+| Views | `odoo19-view-form`, `odoo19-view-tree`, `odoo19-view-kanban`, `odoo19-view-search`, `odoo19-view-pivot`, `odoo19-view-graph`, `odoo19-view-calendar`, `odoo19-view-activity`, `odoo19-view-map` |
+| Business Logic | `odoo19-method-action`, `odoo19-method-onchange`, `odoo19-method-constraint` |
+| Controllers | `odoo19-controller-new`, `odoo19-controller-http`, `odoo19-controller-json` |
+| Reports | `odoo19-report-qweb`, `odoo19-report-xlsx` |
+| Security | `odoo19-security-group`, `odoo19-security-rule`, `odoo19-security-field`, `odoo19-security-xml` |
+| Automation | `odoo19-automation-cron`, `odoo19-automation-server-action` |
+| Migration | `odoo19-migrate-model`, `odoo19-migrate-view`, `odoo19-migrate-manifest` |
+| Domain-Specific | `odoo19-wizard-new`, `odoo19-wizard-confirm`, `odoo19-test-unit`, `odoo19-test-portal`, `odoo19-hr-employee`, `odoo19-project-task`, `odoo19-stock-picking`, `odoo19-account-invoice`, `odoo19-mrp-bom`, `odoo19-pos-config`, `odoo19-website-sale`, `odoo19-event-manage`, `odoo19-survey-create`, `odoo19-hr-timesheet`, `odoo19-web-widget`, `odoo19-web-assets`, `odoo19-web-template`, `odoo19-menu-item`, `odoo19-action-window`, `odoo19-data-xml`, `odoo19-data-demo`, `odoo19-utils-logging`, `odoo19-utils-translate`, `odoo19-utils-validation`, `odoo19-orm`, `odoo19-flow-state`, `odoo19-flow-approval`, `odoo19-api-rest`, `odoo19-api-external` |
 
-## Installation
+### Odoo Analysis & Operations (`odoo-*`)
 
-1. Install odoo-module-migrator:
-   ```bash
-   pip3 install odoo-module-migrator
-   ```
+| Skill | Purpose |
+|-------|---------|
+| `odoo-vault-base-context` | **Always activate first** — provides Odoo running context |
+| `odoo-db-migration` | Database migration via upgrade.odoo.com |
+| `odoo-module-migration` | Module code syntax migration between versions |
+| `odoo-module-install` | Module install/upgrade/uninstall via command line |
+| `odoo-module-test` | Test Odoo modules comprehensively |
+| `odoo-module-fixing` | Fix module bugs manually |
+| `odoo-db-management` | Database backup/restore/duplicate |
+| `odoo-db-restore` | Restore database from SQL dump |
+| `odoo-environment` | Check/verify Odoo environment |
+| `odoo-path-resolver` | Resolve Odoo paths and configuration |
+| `odoo-architect` | Architecture analysis and planning |
+| `odoo-architecture-analysis` | Modular architecture analysis |
+| `odoo-business-process` | Understand Odoo business processes |
+| `odoo-workflow-analysis` | State machine and approval flows |
+| `odoo-data-model-analysis` | Model relationships and field types |
+| `odoo-migration-analysis` | Migration analysis between versions |
+| `odoo-cross-module-analysis` | Module dependencies analysis |
+| `odoo-security-review` | Security review and checklist |
+| `odoo-error-analysis` | Root cause identification |
+| `odoo-investigate-before-fix` | Debug specific errors before fix |
+| `odoo-reporting-analysis` | QWeb/XLSX/pivot report analysis |
+| `odoo-performance-guide` | Performance optimization |
+| `odoo-performance-analysis` | Query optimization analysis |
+| `odoo-integration-analysis` | External system integration |
+| `odoo-testing-strategy` | Unit/integration/E2E testing strategy |
+| `odoo-click-anywhere-test` | Run click_all test in Odoo |
+| `odoo-password-update` | Update user password via Odoo Shell |
+| `odoo-odoo-service` | Start/stop/restart Odoo server |
+| `odoo-init` | Initialize new Odoo project |
+| `odoo-base-understanding` | Deep understanding of Odoo code |
+| `odoo-code-quality` | Code quality review |
+| `odoo-restart-upgrade` | Restart & upgrade advisor |
+| `odoo-user-context` | Step-by-step operation context |
+| `odoo-uat-script-generator` | Generate UAT scripts |
+| `odoo-debug-tdd` | TDD debugging workflow |
+| `odoo-agent-teams-v2` | 5-agent workflow orchestration |
+| `odoo-agent-teams-v3` | 5-agent testing & development |
+| `odoo-agent-teams-fixing` | 5-agent fix workflow |
 
-2. Copy this skill to your Claude Code skills directory:
-   ```bash
-   cp -r odoo-module-migration ~/.claude/skills/
-   ```
+### AutoResearch (`autorel*`)
 
-## Usage
+Background automation skills for vault documentation:
 
-### Invoke via Skill tool:
-```
-/odoo-migration
-```
+- `autorelog` — Show activity log
+- `autorestart` — Restart running session
+- `autorestatus` — Show current status and progress
+- `autorestop` — Stop running session
+- `autoverify` — Verify module documentation against code
 
-Or describe your migration needs:
-- "Migrate my custom modules from Odoo 15 to 17"
-- "Port this module to Odoo 17, I have old Odoo at /path/odoo15 and new at /path/odoo17"
-- "Help me migrate module_a and module_b from Odoo 16 to 18"
+### Version Control (`gitnexus-*`)
 
-## Complete Workflow
+Git operations: `gitnexus-exploring`, `gitnexus-debugging`, `gitnexus-refactoring`, `gitnexus-impact-analysis`, `gitnexus-cli`, `gitnexus-guide`
 
-The skill performs these steps automatically:
+### Development Workflows (`superpowers:*`)
 
-```
-STEP 1: Ask user for paths
-  - Path to old Odoo/Enterprise source code
-  - Path to new Odoo/Enterprise source code
-  - Source/target version
-  - List of modules to migrate
+Core workflows — invoke before any significant task:
 
-STEP 2: Version Comparison
-  - Analyze Odoo code from both versions
-  - Identify breaking changes
-  - Generate knowledge base
+- `superpowers:brainstorming` — Before creative work
+- `superpowers:systematic-debugging` — When encountering bugs
+- `superpowers:test-driven-development` — Before writing code
+- `superpowers:writing-plans` — Before multi-step implementation
+- `superpowers:executing-plans` — Execute written implementation plans
+- `superpowers:subagent-driven-development` — Parallel agent execution
+- `superpowers:odoo-sdd` — Odoo Spec-Driven Development
 
-STEP 3: Per-Module Migration (iterate for each module)
-  - Analyze module dependencies
-  - Migrate module using odoo-module-migrator
-  - Check for breaking changes
-  - Generate module-specific fixes
-  - Create module review checklist
-  - Mark module status
+### Other Utilities
 
-STEP 4: Generate Output
-  - CLAUDE.md with breaking changes
-  - Per-module review checklists
-  - Migration summary
+`mermaid-diagram`, `mcp-builder`, `artifacts-builder`, `theme-factory`, `webapp-testing`, `md-to-pdf`, `pdf`, `docx`, `pptx`, `xlsx`, `officecli`, `canvas-design`, `algorithmic-art`, `slack-gif-creator`, `skill-creator`
 
-STEP 5: Recommend odoo-db-migration skill for database
-```
-
-## Supported Versions
-
-The skill supports migration from any version to any higher version (8.0 to 19.0):
-- 8.0 → 19.0 (direct!)
-- 15.0 → 17.0 (direct!)
-- 15.0 → 16.0 (consecutive)
-
-The tool runs all intermediate migration steps internally.
-
-## Scripts
-
-### compare_odoo_versions.py
-Compare old and new Odoo versions to identify breaking changes:
-```bash
-python3 scripts/compare_odoo_versions.py /path/to/odoo-15.0 /path/to/odoo-17.0 15.0 17.0
-```
-
-### generate_context.py
-Generate CLAUDE.md for migration:
-```bash
-python3 scripts/generate_context.py 15.0 17.0 module_a module_b
-
-# With breaking changes from comparison
-python3 scripts/generate_context.py 15.0 17.0 module_a -b breaking_changes_15.0_17.0.json
-```
-
-### validate_versions.py
-Validate if migration path is supported:
-```bash
-python3 scripts/validate_versions.py 15.0 17.0
-```
-
-### odoo_upgrade.sh
-For database upgrade, use the separate `odoo-db-migration` skill.
-
-## File Structure
+## Architecture
 
 ```
-project/
-├── CLAUDE.md                 # Migration context (generated)
-├── migration_knowledge/      # Breaking changes (generated)
-│   └── breaking_changes_*.md
-├── module_migration/         # Per-module migration results
-│   ├── module_a/
-│   │   ├── migrated/
-│   │   └── review_checklist.md
-│   └── module_b/
-│       ├── migrated/
-│       └── review_checklist.md
-└── scripts/
-    ├── compare_odoo_versions.py   # Version comparison
-    ├── validate_versions.py         # Version validation
-    └── generate_context.py          # CLAUDE.md generator
-
-odoo-15.0/                   # Old Odoo source (provided by user)
-odoo-17.0/                   # New Odoo source (provided by user)
-custom_modules/              # Modules to migrate
+skill-name/
+├── SKILL.md              # Main skill file (required)
+└── [bundled files]       # Reference docs, scripts, themes (optional)
 ```
 
-## Breaking Changes Knowledge Base
+Each skill is a directory containing a `SKILL.md` file. Skills are invoked via slash commands (e.g., `/odoo19-model-new`).
 
-The skill maintains knowledge of breaking changes for each Odoo version:
+## Odoo Context
 
-| Version | Key Changes |
-|---------|-------------|
-| 12+ | @api.multi deprecated, workflow removed |
-| 16+ | Many2one ondelete changes, mail updates |
-| 17+ | request.cr deprecated, osv.Model removed |
-| 18+ | XMLRPC deprecated |
+**Always activate `odoo-vault-base-context` first** before working with Odoo:
 
-## Database Migration
+```
+Use /odoo-vault-base-context skill FIRST before any Odoo task.
+```
 
-For database migration, use the separate `odoo-db-migration` skill:
-- Trigger: `/odoo-db-migration` or "migrate database Odoo"
-- Handles: dump analysis, upgrade.odoo.com integration, SQL fixes
+## Migration Workflow
 
-## Requirements
+Odoo migration requires two separate skills:
 
-- Python 3.8+
-- odoo-module-migrator
-- Git
-- Access to old and new Odoo/Enterprise source code
+1. `odoo-module-migration` — code syntax migration only (not semantics)
+2. `odoo-db-migration` — database upgrade via upgrade.odoo.com
