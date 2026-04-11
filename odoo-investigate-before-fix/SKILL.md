@@ -1,14 +1,24 @@
 ---
 name: odoo-investigate-before-fix
-description: |
-  WAJIB - Selalu investigasi source code Odoo terlebih dahulu SEBELUM membuat rekomendasi perbaikan.
-  Gunakan ketika:
-  - User meminta perbaikan/fix
-  - Ada error atau bug yang perlu dianalisis
-  - Perlu memahami cara kerja kode sebelum mengubahnya
-  - Membuat asumsi tentang penyebab masalah
-  -
-  ATURAN PENTING: Jangan pernah berasumsi tentang penyebab error atau cara memperbaiki tanpa memeriksa source code terlebih dahulu!
+description: >
+  HANYA trigger untuk REQUEST PERBAIKAN/DEBUGGING yang spesifik.
+
+  TRIGGER (WAJIB ada minimal 1 dari situasi ini):
+  - User menyebut error message/exception spesifik (misal: "AccessError", "ValidationError", "View types not defined")
+  - User menyebut nama bug atau issue number (misal: "bug di PO line", "issue #123")
+  - User meminta cara修复合正 bug/kesalahan
+  - User mengatakan sesuatu "tidak jalan", "error", "gagal", "crash"
+  - Konteks jelas这是一个 debugging/migration task
+
+  JANGAN trigger untuk:
+  - Penjelasan/tutorial/belajar cara kerja (→ gunakan odoo-vault-base-context)
+  - Step-by-step panduan operasi
+  - Memahami field/model/API secara umum
+  - Pertanyaan konseptual tanpa error
+  - Kode baru yang ingin dibuat dari nol
+
+  ATURAN: Selalu investigasi source code terlebih dahulu SEBELUM rekomendasi fix.
+  Jangan pernah memberikan solusi perbaikan berdasarkan asumsi tanpa bukti dari source code.
 
   # Penggunaan Path Resolver
 
