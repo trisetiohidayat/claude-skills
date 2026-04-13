@@ -1,13 +1,15 @@
 ---
 name: autorestart
 description: |
-  AutoResearch system for Odoo 19 vault documentation. TRIGGER when user says:
+  AutoResearch system for Odoo 19 vault documentation. **DEPRECATED**: Use odoo-vault-researcher instead for any Odoo version. This skill is kept for backward compatibility with running sessions.
+
+  TRIGGER when user says:
   - "Start research" or "Begin AutoResearch" or "/autorestart"
   - "Run research on [module]" or "Start /autorestart"
   - "Begin continuous documentation verification"
   - "Research stock module" or similar
 
-  Also handles: /autorestop (stop), /autorestatus (status), /autorelog (logs), /autoverify (verify module)
+  For other Odoo versions (17, 18, 20), use /vault-research instead.
 commands:
   - /autorestart [options] - Start continuous research
   - /autorestop - Stop current research gracefully
@@ -42,7 +44,7 @@ Mode mapping:
 ## Behavior
 
 ### Starting Research (/autorestart)
-1. Validate Odoo codebase path (`~/odoo/odoo19/odoo/addons/`)
+1. Validate Odoo codebase path (`~/odoo/odoo{version}/odoo/addons/`)
 2. Load backlog to understand pending gaps
 3. Determine priority order (dependencies, usage frequency)
 4. Initialize checkpoint with run_id and start time
