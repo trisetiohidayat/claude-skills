@@ -1,130 +1,118 @@
 ---
 name: autorestart
-description: |
-  AutoResearch system for Odoo 19 vault documentation. **DEPRECATED**: Use odoo-vault-researcher instead for any Odoo version. This skill is kept for backward compatibility with running sessions.
-
-  TRIGGER when user says:
-  - "Start research" or "Begin AutoResearch" or "/autorestart"
-  - "Run research on [module]" or "Start /autorestart"
-  - "Begin continuous documentation verification"
-  - "Research stock module" or similar
-
-  For other Odoo versions (17, 18, 20), use /vault-research instead.
-commands:
-  - /autorestart [options] - Start continuous research
-  - /autorestop - Stop current research gracefully
-  - /autorestop --force - Stop immediately
-  - /autorestatus - Show current research status
-  - /autorelog [lines=50] - Show recent activity log
-  - /autoverify module=X [model=Y] [deep|quick] - Verify specific module
+description: >
+  Explicit AutoResearch restart manager. TRIGGER when user says "/autorestart",
+  wants a fresh start ("start over", "reset research", "mulai ulang research"),
+  or the loop was force-stopped/crashed. Do NOT trigger for simple "resume" or
+  "continue" requests — those go to /autoresearch which auto-resumes from stopped state.
 ---
 
-# AutoResearch - Start/Stop Autonomous Research
+# AutoResearch — Restart / Resume
 
-## Options
-- `--modules=stock,sale,purchase` - Specific modules to research
-- `--mode=deep` - deep (Level 4) | medium (Level 3) | quick (Level 2)
-- `--limit=60m` - Time limit (m=minutes, h=hours), e.g. `--limit=60m` or `--limit=2h`
-- `--checkpoint=10m` - Save checkpoint every N minutes
-
-## Depth Levels
-
-| Level | Name | Description |
-|-------|------|-------------|
-| L1 | Surface | Basic field/method names and signatures |
-| L2 | Context | Field types, defaults, constraints, why it exists |
-| L3 | Edge Cases | Cross-model relationships, workflow triggers, failure modes |
-| L4 | Historical | Performance implications, overrides, version changes |
-
-Mode mapping:
-- `--mode=quick` → L2 (Surface + Context)
-- `--mode=medium` → L3 (adds Edge Cases)
-- `--mode=deep` → L4 (adds Historical)
+## Trigger
+`/autorestart` — Resume from paused/stopped state, or start fresh
+`/autorestart --fresh` — Start completely fresh (ignores existing state)
 
 ## Behavior
 
-### Starting Research (/autorestart)
-1. Validate Odoo codebase path (`~/odoo/odoo{version}/odoo/addons/`)
-2. Load backlog to understand pending gaps
-3. Determine priority order (dependencies, usage frequency)
-4. Initialize checkpoint with run_id and start time
-5. Begin research loop on highest priority module
+### Step 1 — Check State
 
-### Research Loop (per module)
-For each model in module:
-1. **Discover**: Scan code for fields/methods
-2. **Verify + Depth (parallel)**:
-   - Code vs Doc: Read source, confirm behavior, record line numbers
-   - Depth Escalation: Explore L1-L4 questions
-3. **Document**: Write verified + deep doc to vault
-4. **Update Tracking**: Update verified-status.md, backlog.md
-5. **Checkpoint**: If interval reached, save progress
+```
+IF .autoresearch/state.json exists:
+  READ state
+  IF status == "running":
+    → "Loop is already running. Use /autorestatus to check, or /autorestop to stop first."
+  IF status == "stopped":
+    → Auto-resume (no prompt needed — graceful stop means safe to resume)
+  IF status == "paused":
+    → Show pause summary, offer resume
+  IF status == "force_stopped":
+    → OFFER: "Resume from cycle N or start fresh?"
+ELSE:
+  → Start fresh
+```
 
-### Stopping Research (/autorestop)
-1. Complete current task gracefully
-2. Save final checkpoint
-3. Log all findings to activity log
-4. Update status to "stopped"
+### Step 2 — Resume (auto or confirmed)
 
-### Force Stop (/autorestop --force)
-1. Save checkpoint immediately
-2. Mark current task as "incomplete"
-3. Log "force stopped"
-4. On next /autorestart, offer to resume or restart
+```
+1. Load state from .autoresearch/state.json
+2. Restore: current_priorities, pending_gaps
+3. Read: wiki/log.md (last 15 lines), wiki/index.md
+4. Set status: "running"
+5. Save state
+6. CronCreate for next cycle
+   → Save cron_job_id to state.json
+7. Announce resume:
+```
 
-### Checkpoint Logic
-- Save every N minutes (default 10m)
-- Save after each module completion
-- Save before stop
-- Include: run_id, current position, gaps found, verified count
+```
+═══════════════════════════════════════════════════════
+  AUTORESEARCH — RESUMED
+═══════════════════════════════════════════════════════
+  Resuming from: cycle <N>
+  Previous:     <timestamp>
+  Pages:        <N> created | <N> updated
+  Sources:      <N> processed
+  Final score:  <score>
 
-### Resume Logic
-- On new `/autorestart`, check for existing checkpoint
-- If checkpoint exists with status="running", offer resume
-- Load checkpoint and continue from current position
+  Priorities restored: <list>
+  Pending gaps: <N>
+
+  Cron job scheduled (ID: <cron_xxx>)
+  Next cycle: <in N seconds>
+═══════════════════════════════════════════════════════
+```
+
+### Step 3 — Fresh Start
+
+```
+1. Archive old state: mv .autoresearch/state.json .autoresearch/state.archive.json
+2. Initialize new .autoresearch/state.json
+3. Set status: "running"
+4. CronCreate for next cycle
+5. Announce fresh start
+```
 
 ## Output
-- Updates: Research-Log/backlog.md, Research-Log/verified-status.md
-- Activity: Research-Log/active-run/log.md
-- Insights: Research-Log/insights/depth-escalations.md
 
-## Error Handling
+### Resume Summary (shown when stopped but not running)
 
-| Error | Response |
-|-------|----------|
-| Odoo path invalid | Flag error, do not start research |
-| Checkpoint corrupted | Offer to start fresh or delete checkpoint |
-| No checkpoint on resume | Start new research session |
-| Time limit parsed as hours | Support both `m` (minutes) and `h` (hours) |
+```
+═══════════════════════════════════════════════════════
+  AUTORESEARCH — READY TO RESUME
+═══════════════════════════════════════════════════════
+  Previous session: <date>
+  Cycles completed: <N>
+  Pages created:   <N>
+  Sources:        <N>
+  Final score:    <score>
 
-## Verification (/autoverify)
+  Options:
+    [1] Resume from cycle <N>  ← continues where we stopped
+    [2] Start fresh           ← clear state, begin new
+═══════════════════════════════════════════════════════
+```
 
-`/autoverify module=stock [model=stock.quant] [deep|quick]`
+### Resume Confirmed
 
-1. Load module documentation
-2. Compare with actual code using verification_engine.py
-3. Report discrepancies
-4. Update verification status
-5. Flag outdated entries
-6. Add to backlog if gaps found
+```
+Resuming from cycle <N>...
+Priorities restored: <list>
+Pending gaps: <N>
+Cron job scheduled.
+Starting next cycle now.
+```
 
-## Status (/autorestatus)
+## Relation to Other Skills
 
-Show:
-- Is research running?
-- Current module and model
-- Current depth level
-- Progress: X/608 modules completed
-- Gaps found this session
-- Verified entries count
-- Time elapsed / time limit
-- Last checkpoint time
+| Skill | Use |
+|-------|-----|
+| `/autoresearch` | Primary entry — auto-detects stopped state and resumes |
+| `/autorestart` | Explicit resume/restart — useful when loop was force-stopped |
+| `/autorestop` | Stop gracefully |
+| `/autorestatus` | Check current state without acting |
 
-## Activity Log (/autorelog)
-
-Show recent activity from Research-Log/active-run/log.md:
-- Timeline of research actions
-- Findings at each checkpoint
-- Errors encountered
-- Gaps discovered
-- Depth escalations completed
+**Usage note:** `/autoresearch` auto-resumes from graceful stops (status: "stopped") without prompting — use it for normal continuation. Use `/autorestart` explicitly for:
+- Fresh start (`/autorestart --fresh`) — clear state, begin new
+- Force-stopped/crashed state (status: "force_stopped") — offers resume vs fresh
+- When you want to see the state summary before deciding what to do

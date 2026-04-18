@@ -35,7 +35,40 @@ DB_PORT="${DB_PORT:-5432}"
 DB_USER="${DB_USER:-odoo}"
 DB_PASSWORD="${DB_PASSWORD:-odoo}"
 DB_PREFIX=""
-WORK_DIR="./upgrade_$(date +%Y%m%d_%H%M%S)"
+WORK_DIR="$(pwd)/upgrade_$(date +%Y%m%d_%H%M%S)"
+
+# ===========================================
+# RUN NUMBER LOGIC (auto-increment run_XXX)
+# ===========================================
+# Looks for existing run_NNN folders in the caller's project directory
+# (the CWD when the script is invoked), so it works before WORK_DIR exists.
+
+get_next_run_num() {
+    local search_dir="${1:-$(pwd)}"
+    local max_run=0
+
+    if [[ -d "$search_dir" ]]; then
+        for dir in "$search_dir"/run_[0-9][0-9][0-9]; do
+            if [[ -d "$dir" ]]; then
+                local run_name
+                run_name=$(basename "$dir")
+                local run_num
+                run_num="${run_name#run_}"
+                run_num=$((10#$run_num))
+                if [[ "$run_num" -gt "$max_run" ]]; then
+                    max_run=$run_num
+                fi
+            fi
+        done
+    fi
+
+    local next_run=$((max_run + 1))
+    printf "%03d" "$next_run"
+}
+
+# Detect existing run number from the project directory (CWD) before
+# WORK_DIR is created. The actual logs go inside WORK_DIR.
+RUN_NUM=$(get_next_run_num "$(pwd)")
 
 # Colors
 RED='\033[0;31m'
@@ -201,7 +234,10 @@ extract_dump() {
     cd "$WORK_DIR"
 
     local dump_ext="${DUMP_FILE##*.}"
-    local dump_name=$(basename "$DUMP_FILE" .$dump_ext)
+    # Base name of dump without extension — used for output naming and extraction folder
+    local dump_base=$(basename "$DUMP_FILE" ."$dump_ext")
+    # Store for later use in generate_fixed_dump
+    echo "$dump_base" > "$WORK_DIR/.dump_base_name"
 
     case "$dump_ext" in
         sql)
@@ -209,14 +245,15 @@ extract_dump() {
             ln -sf "$(realpath "$DUMP_FILE")" "./dump.sql"
             ;;
         zip)
-            print_info "ZIP dump detected - extracting..."
-            unzip -o "$DUMP_FILE" -d ./extracted/ > /dev/null 2>&1
-            if [[ -f "./extracted/dump.sql" ]]; then
-                ln -sf "$(realpath ./extracted/dump.sql)" "./dump.sql"
+            print_info "ZIP dump detected - extracting to ./${dump_base}/..."
+            # Extract to folder named same as the ZIP file (without extension)
+            unzip -o "$DUMP_FILE" -d "./${dump_base}/" > /dev/null 2>&1
+            if [[ -f "./${dump_base}/dump.sql" ]]; then
+                ln -sf "$(realpath "./${dump_base}/dump.sql")" "./dump.sql"
                 print_success "Extracted dump.sql from zip"
             else
-                # Find any .sql file
-                local sql_file=$(find ./extracted -name "*.sql" | head -1)
+                # Find any .sql file in extracted folder
+                local sql_file=$(find "./${dump_base}" -name "*.sql" | head -1)
                 if [[ -n "$sql_file" ]]; then
                     ln -sf "$(realpath "$sql_file")" "./dump.sql"
                     print_success "Found: $sql_file"
@@ -253,8 +290,8 @@ extract_dump() {
 prepare_database() {
     print_step "Preparing database for upgrade..."
 
-    # Extract database name from dump
-    local db_name=$(grep -oP "(?<=CREATE DATABASE )[a-zA-Z0-9_]+" ./dump.sql 2>/dev/null | head -1 || echo "database")
+    # Extract database name from dump (POSIX-compatible — no grep -oP)
+    local db_name=$(sed -n 's/^CREATE DATABASE \([a-zA-Z0-9_]*\).*/\1/p' ./dump.sql 2>/dev/null | head -1 || echo "database")
 
     # Sanitize for Odoo upgrade
     db_name="${db_name//-/_}"
@@ -305,8 +342,8 @@ apply_fixes() {
     if command -v psql &> /dev/null; then
         export PGPASSWORD="$DB_PASSWORD"
 
-        # Get database name
-        local db_name=$(grep -oP "(?<=CREATE DATABASE )[a-zA-Z0-9_]+" ./dump.sql 2>/dev/null | head -1 || echo "database")
+        # Get database name (POSIX-compatible — no grep -oP)
+        local db_name=$(sed -n 's/^CREATE DATABASE \([a-zA-Z0-9_]*\).*/\1/p' ./dump.sql 2>/dev/null | head -1 || echo "database")
         db_name="${db_name//-/_}"
 
         print_info "Applying fixes to ${DB_PREFIX}${db_name}..."
@@ -322,6 +359,40 @@ apply_fixes() {
     else
         print_warning "psql not available - cannot apply fixes"
         print_info "Fixes were NOT applied"
+    fi
+}
+
+# ===========================================
+# GENERATE FIXED DUMP
+# ===========================================
+# Creates the fixed dump named: {dump_base}_fixed_run{N}_{timestamp}.sql
+# This is the output to re-upload to upgrade.odoo.com after applying fixes.
+
+generate_fixed_dump() {
+    local run_num="${1:-$RUN_NUM}"
+    local source_dump="${2:-$DUMP_FILE}"
+
+    # Get the base name from the file saved by extract_dump()
+    local dump_base
+    if [[ -f "$WORK_DIR/.dump_base_name" ]]; then
+        dump_base=$(cat "$WORK_DIR/.dump_base_name")
+    else
+        # Fallback: derive from source dump filename
+        local src_ext="${source_dump##*.}"
+        dump_base=$(basename "$source_dump" ."$src_ext")
+    fi
+
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    local fixed_name="${dump_base}_fixed_run${run_num}_${timestamp}.sql"
+    local fixed_path="$WORK_DIR/$fixed_name"
+
+    if [[ -f "$WORK_DIR/dump.sql" ]]; then
+        cp "$WORK_DIR/dump.sql" "$fixed_path"
+        print_success "Fixed dump created: $fixed_path"
+        print_info "Re-upload this file to upgrade.odoo.com for the next upgrade run"
+    else
+        print_warning "dump.sql not found — cannot generate fixed dump"
     fi
 }
 
@@ -351,27 +422,32 @@ run_upgrade() {
     # Read contract
     local contract=$(cat "$CONTRACT_FILE" | tr -d ' \n\r')
 
-    # Create upgrade log directory
-    mkdir -p "$WORK_DIR/upgrade_logs/run_001"
+    # Create upgrade log directory (auto-increment run_XXX)
+    mkdir -p "$WORK_DIR/upgrade_logs/run_$RUN_NUM"
 
     print_info "Starting upgrade... (this may take a while)"
     print_info "Check upgrade.odoo.com for status"
+    print_info "Run: run_$RUN_NUM"
 
     # Run upgrade
     python <(curl -s https://upgrade.odoo.com/upgrade) test \
         -i "$(realpath ./dump.sql)" \
         -t "$TARGET_VERSION" \
         -c "$contract" \
-        2>&1 | tee "$WORK_DIR/upgrade_logs/run_001/upgrade.log"
+        2>&1 | tee "$WORK_DIR/upgrade_logs/run_$RUN_NUM/upgrade.log"
 
     local upgrade_status=${PIPESTATUS[0]}
 
     if [[ $upgrade_status -eq 0 ]]; then
         print_success "Upgrade command completed"
         print_info "Check upgrade.odoo.com to download the upgraded database"
+        # Generate the fixed dump for next re-upload
+        generate_fixed_dump "$RUN_NUM" "$DUMP_FILE"
     else
         print_error "Upgrade command failed with status: $upgrade_status"
-        print_info "Check log: $WORK_DIR/upgrade_logs/run_001/upgrade.log"
+        print_info "Check log: $WORK_DIR/upgrade_logs/run_$RUN_NUM/upgrade.log"
+        # Still generate the fixed dump so user can re-upload after fixing
+        generate_fixed_dump "$RUN_NUM" "$DUMP_FILE"
     fi
 }
 
@@ -436,6 +512,7 @@ main() {
     echo "  Contract:      $CONTRACT_FILE"
     echo "  Fix Pattern:   ${FIX_PATTERN:-none}"
     echo "  Work Directory: $WORK_DIR"
+    echo "  Run:           run_$RUN_NUM"
     echo "  Dry Run:       $DRY_RUN"
     echo ""
 

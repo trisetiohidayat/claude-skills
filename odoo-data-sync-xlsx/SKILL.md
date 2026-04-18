@@ -3,260 +3,276 @@ name: odoo-data-sync-xlsx
 description: >
   Export dan import data Odoo ke/dari Excel untuk keperluan migrasi, recovery, atau sync data antar database Odoo.
   Gunakan skill ini setiap kali user ingin:
-  - Export data Odoo ke Excel (CSV/XLSX)
-  - Import data dari Excel ke Odoo database
+  - Export data Odoo ke Excel (CSV/XLSX) dengan atau tanpa External ID
+  - Import data dari Excel ke Odoo database menggunakan DB ID atau External ID
   - Recovery data yang hilang setelah upgrade (seperti company_id di res.partner.bank)
   - Sync atau bandingkan data antar Odoo 15 dan Odoo 19
-  - Backup data tertentu dalam format spreadsheet
+  - Backup data tertentu dalam format spreadsheet yang bisa langsung diimport ulang
 
   Trigger phrases: "export excel", "import excel", "recovery data", "sync data", "migrasi data",
-  "company_id hilang", "export ke csv", "import dari csv", "backup data ke excel"
+  "company_id hilang", "export ke csv", "import dari csv", "backup data ke excel",
+  "external id", "xml id", "buat file import odoo"
 
-  Tools: Bash (psql), Python (openpyxl, csv)
+  Tools: Bash (psql), Python (openpyxl, psycopg2)
 ---
 
 # Odoo Data Sync via Excel
 
 ## Purpose
 
-Skill ini membantu export dan import data Odoo melalui Excel/CSV files, khusus untuk:
-- **Export**: Ambil data dari Odoo database (PostgreSQL) → Excel
-- **Import**: Baca Excel → Update/Create records di Odoo database
-- **Recovery**: Restore field yang hilang setelah upgrade (seperti `company_id` di `res.partner.bank`)
+Export dan import data Odoo melalui Excel/CSV, dengan dukungan penuh untuk:
+- **External ID** (XML ID) — format standar Odoo yang portabel antar database
+- **DB ID** — integer primary key untuk operasi cepat dalam satu database
+- **Field matching** — match berdasarkan nilai field (seperti acc_number)
 
-## Konsep Penting
+---
 
-### Database & Server Configuration (Roedl Project)
+## Konsep: DB ID vs External ID
 
-**Odoo 15:**
-| Property | Value |
-|----------|-------|
-| Database | `roedl_15_20260331` |
-| HTTP Port | 8115 |
-| Status | Running |
-| PostgreSQL Host | localhost |
-| PostgreSQL User | odoo |
-| PostgreSQL Password | odoo |
+Dalam Odoo ada dua cara mengidentifikasi record:
 
-**Odoo 19 (Upgraded):**
-| Property | Value |
-|----------|-------|
-| Database | `roedl_upgraded_20260331` |
-| HTTP Port | 8119 |
-| Status | Running |
-| PostgreSQL Host | localhost |
-| PostgreSQL User | odoo |
-| PostgreSQL Password | odoo |
+| Jenis | Contoh | Kapan Digunakan |
+|-------|--------|-----------------|
+| **DB ID** | `22` | Satu database, operasi cepat |
+| **External ID** | `base.res_partner_22` | Lintas database, import resmi Odoo |
 
-### Alur Kerja Recovery Data
+External ID disimpan di tabel `ir_model_data` dengan format `module.name`.
+
+**Kenapa External ID lebih baik untuk migrasi:**
+- DB ID bisa berbeda antar database (record yang sama bisa ID 22 di DB lama, ID 3017 di DB baru)
+- External ID stabil dan bisa di-resolve di database mana pun
+- Format yang digunakan Odoo UI saat Export/Import
+
+---
+
+## Alur Kerja Recovery Data
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  STEP 1: EXPORT dari Odoo 15 (Source)                     │
-│  - Gunakan scripts/export_data.py                           │
-│  - Target: ~/Downloads/odoo_export_[model]_[date].xlsx    │
+│  STEP 1: EXPORT dari Source DB                              │
+│  export_data.py --include-external-id                       │
+│  → Kolom "id" berisi External ID (base.res_partner_22)      │
 │                                                             │
-│  STEP 2: REVIEW & VALIDASI di Excel                        │
-│  - User bisa edit manual jika perlu                        │
-│  - Pastikan key fields (acc_number) match 100%              │
+│  STEP 2: REVIEW & EDIT di Excel                             │
+│  → User bisa edit nilai, hapus baris yang tidak perlu       │
 │                                                             │
-│  STEP 3: IMPORT ke Odoo 19 (Target)                        │
-│  - Gunakan scripts/import_data.py                           │
-│  - Match berdasarkan key fields                             │
-│  - Update field yang perlu di-recovery                     │
+│  STEP 3: IMPORT ke Target DB                                │
+│  import_data.py --use-external-id ATAU --match-field id     │
+│  → Script resolve External ID → DB ID di target database    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Step 1: Export Data dari Odoo
+## Script 1: export_data.py
 
-### Command untuk Export
+### Mode Export
 
-Gunakan `scripts/export_data.py`:
-
+**Mode 1: DB ID biasa (default)**
 ```bash
-python scripts/export_data.py \
-  --db-host localhost \
-  --db-port 5432 \
-  --db-user odoo \
-  --db-password odoo \
+python export_data.py \
   --database roedl_15_20260331 \
   --model res_partner_bank \
-  --output ~/Downloads/odoo_export_res_partner_bank_20260331.xlsx \
-  --fields id,acc_number,sanitized_acc_number,acc_holder_name,partner_id,bank_id,currency_id,company_id
+  --output ~/Downloads/export.xlsx \
+  --fields id,acc_number,partner_id,company_id
 ```
 
-### Field yang Direkomendasikan untuk Export
+**Mode 2: Dengan External ID di kolom `id`**
+```bash
+python export_data.py \
+  --database roedl_15_20260331 \
+  --model res_partner_bank \
+  --output ~/Downloads/export.xlsx \
+  --fields id,acc_number,partner_id,company_id \
+  --include-external-id
+# Kolom "id" akan berisi: "__import__.res_partner_bank_22"
+```
 
-**res_partner_bank:**
-| Field | Description | Wajib? |
-|-------|-------------|--------|
-| `id` | Record ID | Ya |
-| `acc_number` | Account Number (key matching) | Ya |
-| `sanitized_acc_number` | Cleaned account number | Ya |
-| `acc_holder_name` | Account holder name | Ya |
-| `partner_id` | Partner ID | Ya |
-| `bank_id` | Bank reference ID | No |
-| `currency_id` | Currency ID | No |
-| `company_id` | **TARGET FIELD** - yang perlu di-recovery | Ya |
+**Mode 3: Odoo-compatible format (External ID untuk semua many2one)**
+```bash
+python export_data.py \
+  --database roedl_15_20260331 \
+  --model res.partner.bank \
+  --output ~/Downloads/export.xlsx \
+  --fields id,acc_number,partner_id,company_id \
+  --odoo-format
+# Output: kolom "id" (ext id record), "partner_id/id" (ext id partner), "company_id/id" (ext id company)
+```
 
-### Validasi Export
+**Mode 4: Related fields tertentu sebagai External ID**
+```bash
+python export_data.py \
+  --database roedl_15_20260331 \
+  --model res_partner_bank \
+  --output ~/Downloads/export.xlsx \
+  --fields id,acc_number,partner_id,company_id \
+  --include-external-id \
+  --related-as-external-id partner_id,company_id
+# Menambahkan kolom partner_id/id dan company_id/id di samping nilai aslinya
+```
 
-Pastikan file Excel sudah benar:
-1. Buka file Excel
-2. Check kolom `company_id` ada nilainya (tidak NULL untuk data yang perlu di-recovery)
-3. Check `acc_number` tidak ada duplikat
-4. Total row sesuai ekspektasi
+### Parameter export_data.py
+
+| Parameter | Default | Fungsi |
+|-----------|---------|--------|
+| `--database` | (required) | Nama database PostgreSQL |
+| `--model` | (required) | Nama model Odoo (titik atau underscore) |
+| `--output` | (required) | Path output (.xlsx atau .csv) |
+| `--fields` | `*` | Fields yang di-export (comma-separated) |
+| `--where` | `1=1` | Kondisi WHERE untuk filter |
+| `--limit` | `0` (no limit) | Batas jumlah record |
+| `--include-external-id` | off | Ganti kolom `id` dengan External ID |
+| `--odoo-format` | off | Format Odoo import (id + many2one/id) |
+| `--related-as-external-id` | `''` | Kolom many2one yang dijadikan ext id |
 
 ---
 
-## Step 2: Import Data ke Odoo
+## Script 2: import_data.py
 
-### Command untuk Import
+### Mode Import
 
-Gunakan `scripts/import_data.py`:
-
+**Mode 1: Match by DB id (integer)**
 ```bash
-python scripts/import_data.py \
-  --db-host localhost \
-  --db-port 5432 \
-  --db-user odoo \
-  --db-password odoo \
+python import_data.py \
   --database roedl_upgraded_20260331 \
   --model res_partner_bank \
-  --input ~/Downloads/odoo_export_res_partner_bank_20260331.xlsx \
-  --match-field acc_number \
-  --update-fields company_id \
+  --input ~/Downloads/fix.xlsx \
+  --match-field id \
+  --update-fields partner_id \
   --dry-run
 ```
 
-### Flag Penting
-
-| Flag | Fungsi |
-|------|--------|
-| `--dry-run` | Preview saja, tidak execute UPDATE |
-| `--batch-size` | Jumlah records per batch (default: 100) |
-| `--match-field` | Field untuk match record (default: id) |
-| `--update-fields` | Field yang akan di-update |
-| `--create-missing` | Buat record baru jika tidak ditemukan |
-
-### Dry Run Output
-
-Contoh output dry-run:
-```
-=== DRY RUN - Preview Perubahan ===
-Total records in file: 61
-Matched records in DB: 60
-Will UPDATE: 60 records
-Will CREATE: 0 records
-Will SKIP: 1 record (no match)
-
-Preview perubahan:
-  ID=71: company_id 1 → 1 (no change, will skip)
-  ID=72: company_id NULL → 2 (will update)
-  ...
-```
-
-### Execute Import
-
-Setelah validasi dry-run OK, jalankan tanpa `--dry-run`:
-
+**Mode 2: Match by External ID (kolom `id` berisi module.name)**
 ```bash
-python scripts/import_data.py \
-  --db-host localhost \
-  --db-port 5432 \
-  --db-user odoo \
-  --db-password odoo \
+python import_data.py \
   --database roedl_upgraded_20260331 \
   --model res_partner_bank \
-  --input ~/Downloads/odoo_export_res_partner_bank_20260331.xlsx \
-  --match-field acc_number \
-  --update-fields company_id
+  --input ~/Downloads/fix.xlsx \
+  --use-external-id \
+  --update-fields partner_id \
+  --dry-run
 ```
 
----
-
-## Step 3: Verifikasi Hasil
-
-### Check di Database
-
-```sql
--- Check hasil import
-SELECT company_id, COUNT(*)
-FROM res_partner_bank
-GROUP BY company_id;
-```
-
-Expected output setelah recovery:
-```
- company_id | count
-------------+------
-          1 |    23
-          2 |    10
-       NULL |     0
-(3 rows)
-```
-
-### Check di Odoo UI
-
-1. Buka Odoo 19 di browser (http://localhost:8119)
-2. Login sebagai admin
-3. Navigate ke: Contacts → Configuration → Bank Accounts
-4. Verify bahwa `company_id` sudah ter-set dengan benar
-
----
-
-## Troubleshooting
-
-### Error: "relation does not exist"
-
-Pastikan database name correct:
+**Mode 3: Update many2one field menggunakan External ID (kolom `partner_id/id`)**
 ```bash
-# List available databases
-PGPASSWORD=odoo psql -h localhost -U odoo -l
+python import_data.py \
+  --database roedl_upgraded_20260331 \
+  --model res_partner_bank \
+  --input ~/Downloads/fix.xlsx \
+  --match-field acc_number \
+  --update-fields partner_id/id,company_id/id \
+  --dry-run
+# Script akan resolve partner_id/id (external id) → DB id sebelum UPDATE
 ```
 
-### Error: "permission denied"
-
-Pastikan PostgreSQL credentials benar:
-- User: `odoo`
-- Password: `odoo`
-
-### Error: "no such column"
-
-Nama field berbeda antar versi. Check column names:
-```sql
--- Di Odoo 15
-\d res_partner_bank
-
--- Di Odoo 19
-\d res_partner_bank
+**Mode 4: Match field + External ID update**
+```bash
+python import_data.py \
+  --database roedl_upgraded_20260331 \
+  --model res_partner_bank \
+  --input ~/Downloads/fix.xlsx \
+  --match-field acc_number \
+  --update-fields partner_id/id \
+  --dry-run
 ```
 
-### Warning: "company_id will become NULL"
+### Parameter import_data.py
 
-Jika partner company memiliki `company_id=NULL` secara default di Odoo 19, maka hasil computed `related('partner_id.company_id')` juga NULL.
-Ini normal di Odoo 19 - partner yang IS A COMPANY tidak punya `company_id`.
+| Parameter | Default | Fungsi |
+|-----------|---------|--------|
+| `--database` | (required) | Nama database PostgreSQL |
+| `--model` | (required) | Nama model Odoo |
+| `--input` | (required) | Path file Excel/CSV |
+| `--match-field` | `id` | Kolom untuk match record |
+| `--update-fields` | (required) | Field yang di-update. Gunakan `/id` suffix untuk external ID (contoh: `partner_id/id`) |
+| `--use-external-id` | off | Kolom `id` berisi External ID untuk match |
+| `--create-missing` | off | INSERT jika record tidak ditemukan |
+| `--dry-run` | off | Preview saja, tidak execute |
+| `--sheet` | `Export Data` | Sheet Excel yang dibaca |
+| `--batch-size` | `100` | Jumlah record per batch |
+
+### Format Kolom di Excel untuk Import
+
+| Nama Kolom | Isi | Keterangan |
+|-----------|-----|-----------|
+| `id` | `22` (integer) | DB id — dipakai dengan `--match-field id` |
+| `id` | `base.res_partner_22` | External ID — dipakai dengan `--use-external-id` |
+| `partner_id` | `22` | DB id dari related partner |
+| `partner_id/id` | `base.res_partner_22` | External ID dari related partner |
+| `company_id/id` | `base.main_company` | External ID dari related company |
 
 ---
 
-## Model yang Umum untuk Migrasi
+## Database Configuration (Roedl Project)
 
-| Model | Use Case |
-|-------|----------|
-| `res_partner_bank` | Bank accounts - company_id recovery |
-| `res_partner` | Contacts/Companies |
-| `account_move` | Invoices/Journal Entries |
-| `product_product` | Products |
-| `stock_quant` | Inventory |
+| Version | Database | Port |
+|---------|----------|------|
+| Odoo 15 | `roedl_15_20260331` | 8115 |
+| Odoo 19 | `roedl_upgraded_20260331` | 8119 |
+
+Credentials PostgreSQL: `host=localhost user=odoo password=odoo port=5432`
+
+---
+
+## Contoh Workflow: Recovery partner_id di res.partner.bank
+
+```bash
+# 1. Export dari v15 dengan External ID
+python export_data.py \
+  --database roedl_15_20260331 \
+  --model res_partner_bank \
+  --output ~/Downloads/rpb_v15.xlsx \
+  --fields id,acc_number,partner_id,company_id \
+  --odoo-format
+
+# File mengandung kolom: id, acc_number, partner_id/id, company_id/id
+
+# 2. Dry run import ke v19 menggunakan external ID untuk match dan update
+python import_data.py \
+  --database roedl_upgraded_20260331 \
+  --model res_partner_bank \
+  --input ~/Downloads/rpb_v15.xlsx \
+  --use-external-id \
+  --update-fields partner_id/id,company_id/id \
+  --dry-run
+
+# 3. Execute jika preview OK (hapus --dry-run)
+python import_data.py \
+  --database roedl_upgraded_20260331 \
+  --model res_partner_bank \
+  --input ~/Downloads/rpb_v15.xlsx \
+  --use-external-id \
+  --update-fields partner_id/id,company_id/id
+```
 
 ---
 
 ## Safety Rules
 
-1. **SELALU gunakan `--dry-run` terlebih dahulu**
-2. **Backup database sebelum import** jika data kritis
-3. **Export data target terlebih dahulu** untuk perbandingan
-4. **Verify match field** 100% sebelum execute
-5. **JANGAN import ke database production** tanpa konfirmasi user
+1. **SELALU gunakan `--dry-run` terlebih dahulu** — script akan menampilkan semua perubahan tanpa mengeksekusi
+2. **Backup database** jika data kritis (gunakan skill `odoo-db-management`)
+3. **Verify match field** 100% match sebelum execute
+4. **JANGAN import ke database production** tanpa konfirmasi user
+5. **External ID tidak wajib ada** — jika record tidak punya entry di `ir_model_data`, export akan generate ID sementara `__import__.table_id`
+
+---
+
+## Troubleshooting
+
+### "External ID 'xyz' not found"
+Record ada di source DB tapi tidak punya External ID yang dikenali di target DB.
+```sql
+-- Cek apakah external ID ada di target
+SELECT * FROM ir_model_data WHERE module = 'base' AND name = 'res_partner_22';
+```
+
+### "Table not found"
+Nama model salah. Odoo model `res.partner.bank` → tabel PostgreSQL `res_partner_bank`.
+Script otomatis convert, tapi pastikan model yang ditulis benar.
+
+### "Column not in table"
+Field yang di-update tidak ada di versi Odoo target (misal field baru di v19).
+```bash
+# Cek kolom yang tersedia
+PGPASSWORD=odoo psql -h localhost -U odoo -d DB -c "\d res_partner_bank"
+```

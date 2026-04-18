@@ -1,0 +1,446 @@
+{
+  "skill_name": "odoo-playwright",
+  "description": "41 workflow evals, 112 assertions — comprehensive Odoo UI/UX coverage across form, list, kanban, calendar, pivot, graph, dashboard, activity, settings views plus RPC API and advanced debugging patterns",
+  "evals": [
+    {
+      "id": 1,
+      "category": "form-view",
+      "prompt": "Login to Odoo (admin/admin) at http://localhost:8069. Navigate to Contacts. Create a new contact with name 'PT. Maju Bersama', phone '+6281234567890', email 'info@maju.com', street 'Jl. Sudirman No.1', and set country to Indonesia. Save the record.",
+      "expected_output": "playwright-cli commands to fill all mentioned fields and save",
+      "assertions": [
+        {"text": "SKILL.md contains [name='login'] selector for login", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains [name='password'] selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains [name='name'] form field selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains [name='phone'] selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains [name='email'] selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains [name='street'] selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains country_id dropdown selector pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains save button selector (data-hotkey or .o_form_button_save)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md has login workflow section", "type": "format_match", "weight": 0.8},
+        {"text": "SKILL.md has create-record workflow section", "type": "format_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 2,
+      "category": "form-view-date",
+      "prompt": "In Odoo form view, fill a date field (date of birth) to '2020-01-15' and a datetime field (appointment time) to '2020-01-15 14:30:00'.",
+      "expected_output": "playwright-cli commands to interact with datepicker and datetimepicker widgets",
+      "assertions": [
+        {"text": "SKILL.md contains datepicker_input or date field selector pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains datetime picker selector pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_datepicker_picker date selection pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 3,
+      "category": "form-view-many2one",
+      "prompt": "In Odoo form, use a Many2one field (e.g., 'Responsible Person') to search and select 'Administrator' from the dropdown/autocomplete.",
+      "expected_output": "playwright-cli commands for Many2one autocomplete interaction",
+      "assertions": [
+        {"text": "SKILL.md contains Many2one or many2one field selector pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains autocomplete dropdown selection (.o-autocomplete--dropdown-item)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_select_menu pattern for selection dropdowns", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 4,
+      "category": "form-view-boolean",
+      "prompt": "In Odoo form, check a boolean checkbox field (e.g., 'Active') and then uncheck it.",
+      "expected_output": "playwright-cli commands for checkbox check/uncheck",
+      "assertions": [
+        {"text": "SKILL.md contains boolean or checkbox selector pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains check/uncheck playwright-cli command", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 5,
+      "category": "form-view-many2many",
+      "prompt": "In Odoo form, add a tag to a Many2many 'Tags' field. Select 'VIP Customer' and 'Corporate' tags from the tag dropdown.",
+      "expected_output": "playwright-cli commands for Many2many tag selection",
+      "assertions": [
+        {"text": "SKILL.md contains Many2many or tag selector pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_tag selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains tag add/remove pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 6,
+      "category": "form-view-monetary",
+      "prompt": "In Odoo sale order form, fill the 'Unit Price' monetary field with '1500000' and verify the 'Tax' field (computed) updates automatically.",
+      "expected_output": "playwright-cli commands for monetary field input and assertion for computed field",
+      "assertions": [
+        {"text": "SKILL.md contains monetary or currency field selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains odoo-assert-readonly or computed field assertion", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 7,
+      "category": "list-view",
+      "prompt": "In Odoo list view, sort records by 'Name' column (ascending), then open a specific record by double-clicking its row. Then select multiple records using checkboxes and click Action > Delete.",
+      "expected_output": "playwright-cli commands for sort, double-click open, multi-select, and action menu",
+      "assertions": [
+        {"text": "SKILL.md contains list view row selector (o_data_row)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains double-click (dblclick) command for opening records", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains checkbox selection pattern (o_list_record_selector)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains Action menu pattern (.o_list_button_action)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains pagination pattern (o_pager_next/previous)", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 8,
+      "category": "list-inline-edit",
+      "prompt": "In Odoo list view, enable inline editing mode by clicking on a cell, change the name value directly, and save the inline edit.",
+      "expected_output": "playwright-cli commands for inline cell editing in list view",
+      "assertions": [
+        {"text": "SKILL.md contains inline edit pattern in list view", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains list save/discard pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 9,
+      "category": "list-quick-create",
+      "prompt": "In Odoo list view, use the quick create (instant add) input at the top of the list to create a new record without opening the full form.",
+      "expected_output": "playwright-cli commands for quick create in list view",
+      "assertions": [
+        {"text": "SKILL.md contains quick create pattern in list view", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 10,
+      "category": "kanban-view",
+      "prompt": "In Odoo kanban view (e.g., CRM pipeline), open a card by clicking it, drag a card from 'Qualified' column to 'Negotiation' column, and use quick create to add a new card in the 'New' column.",
+      "expected_output": "playwright-cli commands for kanban card open, drag-drop, and quick create",
+      "assertions": [
+        {"text": "SKILL.md contains .o_kanban_record selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains kanban card open pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains drag command for kanban drag-drop", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_column_quick_create and quick create input", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains kanban column selector (.o_kanban_group)", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 11,
+      "category": "kanban-edit",
+      "prompt": "In Odoo kanban view, use inline edit mode to edit a card's name directly without opening the form view.",
+      "expected_output": "playwright-cli commands for kanban inline edit",
+      "assertions": [
+        {"text": "SKILL.md contains .o_kanban_edit pattern for inline editing", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_kanban_save and .o_kanban_cancel pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 12,
+      "category": "kanban-load-more",
+      "prompt": "In Odoo kanban view with many records, click 'Load More' to load additional cards in a column.",
+      "expected_output": "playwright-cli commands for load more pattern",
+      "assertions": [
+        {"text": "SKILL.md contains .o_kanban_load_more selector", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 13,
+      "category": "search-advance",
+      "prompt": "In Odoo list view, use the search bar to: (1) search by text 'John', (2) apply a 'My Records' filter, (3) group by 'Responsible', (4) save the search as a favorite named 'My Filter'.",
+      "expected_output": "playwright-cli commands for search, filters, group-by, and save favorite",
+      "assertions": [
+        {"text": "SKILL.md contains .o_searchview_input selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains search fill/enter pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_filter_menu and filter dropdown pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_group_by_menu pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains save favorite filter pattern", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains clear filters pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 14,
+      "category": "search-facets",
+      "prompt": "In Odoo search bar, add multiple search facets (e.g., filter by date range and department), review the facets, and remove individual facets using the X button.",
+      "expected_output": "playwright-cli commands for search facets management",
+      "assertions": [
+        {"text": "SKILL.md contains .o_facet_remove or facet removal pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_searchview_clear or facet pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 15,
+      "category": "calendar-view",
+      "prompt": "Navigate to Odoo Calendar view (e.g., in a Project app). Create a new event by clicking on a time slot, fill the title 'Team Meeting', set the date to tomorrow 10:00-11:00, and save.",
+      "expected_output": "playwright-cli commands for calendar view interaction",
+      "assertions": [
+        {"text": "SKILL.md contains calendar view selectors or workflow", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 16,
+      "category": "pivot-graph-view",
+      "prompt": "In Odoo, switch from List view to Pivot view, then to Graph view. Expand a pivot row to see details.",
+      "expected_output": "playwright-cli commands for view switching and pivot expansion",
+      "assertions": [
+        {"text": "SKILL.md contains .o_switch_view selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains pivot view pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains graph view pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 17,
+      "category": "chatter",
+      "prompt": "In Odoo form view with chatter enabled, post a message 'Follow-up needed' in the chatter thread, then add a note 'Internal note: call client'.",
+      "expected_output": "playwright-cli commands for posting messages and notes in chatter",
+      "assertions": [
+        {"text": "SKILL.md contains chatter or messaging selectors", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains post message pattern in Odoo", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 18,
+      "category": "delete-record",
+      "prompt": "Delete a record in Odoo: open the record form, click the Delete button (with trash icon), confirm deletion in the warning dialog.",
+      "expected_output": "playwright-cli commands for delete button, confirmation dialog",
+      "assertions": [
+        {"text": "SKILL.md contains .o_form_button_remove delete pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains modal danger button confirmation pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 19,
+      "category": "import-wizard",
+      "prompt": "Import records into Odoo list view using the Import button: click Import from action menu, upload a CSV file, map columns, and validate import.",
+      "expected_output": "playwright-cli commands for import wizard",
+      "assertions": [
+        {"text": "SKILL.md contains import pattern (Import from action menu)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains file upload or import wizard selectors", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 20,
+      "category": "export",
+      "prompt": "Export filtered records from Odoo list view: apply a filter first, then use Action > Export to export only the visible records.",
+      "expected_output": "playwright-cli commands for export action after filtering",
+      "assertions": [
+        {"text": "SKILL.md contains export action pattern (.o_menu_item:has-text('Export'))", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 21,
+      "category": "state-transition",
+      "prompt": "Confirm a sale order quotation (Draft → Sale Order) in Odoo Sales app. Verify the state changes using odoo-assert-state.",
+      "expected_output": "playwright-cli commands for state transition and state assertion",
+      "assertions": [
+        {"text": "SKILL.md contains state transition or confirm button pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains odoo-assert-state command", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 22,
+      "category": "notification",
+      "prompt": "Perform an action in Odoo that triggers a success notification (e.g., save a record), then verify the toast notification appears and dismiss it.",
+      "expected_output": "playwright-cli commands for notification verification and dismissal",
+      "assertions": [
+        {"text": "SKILL.md contains .o_notification toast selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains odoo-assert-notification command", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 23,
+      "category": "image-binary",
+      "prompt": "Upload an image to a binary/image field in Odoo form view (e.g., product image).",
+      "expected_output": "playwright-cli commands for binary field file upload",
+      "assertions": [
+        {"text": "SKILL.md contains binary/image upload pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 24,
+      "category": "session-management",
+      "prompt": "Save the current logged-in Odoo session (URL + cookies) as a named session 'test-env', then later restore it to resume exactly where you left off.",
+      "expected_output": "playwright-cli commands for session save/load/restore",
+      "assertions": [
+        {"text": "SKILL.md contains session management commands (checkpoint-save, checkpoint-load)", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 25,
+      "category": "breadcrumb-nav",
+      "prompt": "Navigate deep into Odoo (e.g., Sales > Orders > SO001 > Line Items), then use breadcrumb navigation to go back to 'Sales Orders' list.",
+      "expected_output": "playwright-cli commands for breadcrumb navigation",
+      "assertions": [
+        {"text": "SKILL.md contains breadcrumb navigation selectors", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 26,
+      "category": "selection-dropdown",
+      "prompt": "Select a value from a Selection dropdown field (e.g., 'Priority: 1-Low, 2-Medium, 3-High') in Odoo form view.",
+      "expected_output": "playwright-cli commands for selection field dropdown",
+      "assertions": [
+        {"text": "SKILL.md contains selection field or dropdown pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_select_menu pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 27,
+      "category": "form-clean-assertion",
+      "prompt": "Open an existing Odoo record, verify the form is clean (no unsaved changes), make an edit, save it, then verify the form is clean again after save.",
+      "expected_output": "playwright-cli commands using odoo-assert-clean",
+      "assertions": [
+        {"text": "SKILL.md contains odoo-assert-clean command", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 28,
+      "category": "direct-action-url",
+      "prompt": "Navigate directly to a specific Odoo model view using a URL action (e.g., go directly to product.product list without menu navigation).",
+      "expected_output": "playwright-cli commands for direct action URL navigation",
+      "assertions": [
+        {"text": "SKILL.md contains direct action URL pattern (web#action=model.name)", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 29,
+      "category": "x2m-inline",
+      "prompt": "In Odoo sale order form, add a new line item in the Order Lines one2many table: add product 'iMac', quantity 2, and unit price 1500.",
+      "expected_output": "playwright-cli commands for one2many inline table editing",
+      "assertions": [
+        {"text": "SKILL.md contains one2many / X2M inline table pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 30,
+      "category": "view-switcher",
+      "prompt": "In Odoo, switch views using the view switcher in the control panel: switch from List to Kanban to Form to Calendar view.",
+      "expected_output": "playwright-cli commands for view switcher buttons",
+      "assertions": [
+        {"text": "SKILL.md contains view switcher selector pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 31,
+      "category": "date-datetime-picker",
+      "prompt": "In Odoo sale order form, fill a date field (Order Date) to '2024-06-15' using the datepicker widget. Then fill a datetime field (Deadline) to '2024-06-20 09:30:00' using the datetime picker. Clear the date using the remove button.",
+      "expected_output": "playwright-cli commands for o_datepicker_input fill, calendar day selection, datetime picker, and date clear",
+      "assertions": [
+        {"text": "SKILL.md contains o_datepicker_input selector for date field input", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_datepicker_picker date selection pattern (click a day)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_datetimepicker_input for datetime fields", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_datepicker_remove or clear date pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 32,
+      "category": "action-menu-export",
+      "prompt": "In Odoo list view, click the Action dropdown button in the control panel, select 'Export' from the menu, then export to CSV file. Also test selecting a value from an o_select_menu dropdown field.",
+      "expected_output": "playwright-cli commands for Action menu click, Export button, file download, and o_select_menu selection",
+      "assertions": [
+        {"text": "SKILL.md contains o_dropdown_menu action button pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_list_button_export export button pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains export-to-file or PDF export pattern", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains o_select_menu for selection dropdown fields", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 33,
+      "category": "dashboard-view",
+      "prompt": "Open the Odoo dashboard (e.g., from the menu). Click on a KPI tile (e.g., 'Total Revenue' card) to drill down into the underlying records. Refresh the dashboard.",
+      "expected_output": "playwright-cli commands for dashboard navigation, KPI card click, and dashboard reload",
+      "assertions": [
+        {"text": "SKILL.md contains .o_dashboard selector for dashboard view", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_widget or o_tile KPI click pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_kpi_card or o_value KPI value selector", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains o_reload_button or dashboard refresh pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 34,
+      "category": "pdf-report-download",
+      "prompt": "Open a sale order in Odoo form view, click the 'Print' button, select 'PDF' from the dropdown, and capture the downloaded PDF file to /tmp/order.pdf. Also test navigating to a direct report URL.",
+      "expected_output": "playwright-cli commands for print button, PDF selection, download capture, and direct report URL",
+      "assertions": [
+        {"text": "SKILL.md contains .o_form_button_print print button selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains PDF download pattern (waitForEvent download)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains report/pdf/ URL pattern for direct report access", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 35,
+      "category": "rpc-api-call",
+      "prompt": "Use Playwright to execute a JSON-RPC call directly against the Odoo /web/dataset/call_kw endpoint: call res.partner search_read to get the first 5 partner names without using the UI.",
+      "expected_output": "playwright-cli run-code or eval commands to make RPC calls using fetch() in browser context",
+      "assertions": [
+        {"text": "SKILL.md contains JSON-RPC or RPC call pattern using fetch()", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains /web/dataset/call_kw endpoint URL pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains search_read or create model method call pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 36,
+      "category": "readonly-computed-debug",
+      "prompt": "In an Odoo sale order form, identify which fields are readonly/computed (e.g., 'Amount Total', 'Create Date'). Use JavaScript to check if a field has the o_readonly_modifier CSS class. Assert that computed fields cannot be edited.",
+      "expected_output": "playwright-cli eval commands to inspect DOM for readonly/computed field state",
+      "assertions": [
+        {"text": "SKILL.md contains o_readonly_modifier class for readonly field detection", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_field_monetary or computed field value selector", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains odoo-assert-readonly or readonly check assertion", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 37,
+      "category": "sidebar-favorite-filter",
+      "prompt": "In Odoo list view, fill the search bar with 'name contains Admin', click the bookmark icon to save it as a favorite named 'Admin Contacts', reload the page, then click the favorite to restore the saved search.",
+      "expected_output": "playwright-cli commands for search save as favorite, favorite menu, and restore saved search",
+      "assertions": [
+        {"text": "SKILL.md contains fa-bookmark or save favorite pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_favorite_menu and load saved favorite pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains .o_search_name input for naming favorites", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains o_searchview_toggle or sidebar toggle pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 38,
+      "category": "chatter-follow-note",
+      "prompt": "In Odoo form view with chatter, post a message 'Follow-up scheduled' in the chatter. Add a file attachment to the chatter using the attachment button. Follow the record (subscribe to notifications) and then unfollow it.",
+      "expected_output": "playwright-cli commands for chatter message, attachment upload, follow/unfollow records",
+      "assertions": [
+        {"text": "SKILL.md contains o_chatter_text_field or chatter input selector", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_chatter_button_send send message pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_chatter .o_attachment_button upload pattern", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains o_followers follow/subscribe pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_chatter_button_log_note internal note pattern", "type": "content_match", "weight": 0.8}
+      ]
+    },
+    {
+      "id": 39,
+      "category": "kanban-column-actions",
+      "prompt": "In Odoo kanban view, collapse the first column header, set the column color to blue (using the palette icon), then archive all records in that column from the column action menu.",
+      "expected_output": "playwright-cli commands for column collapse, color picker, and archive all in column",
+      "assertions": [
+        {"text": "SKILL.md contains o_kanban_toggle column collapse pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains fa-palette or o_kanban_config column color pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains o_kanban_colorpicker color selection pattern", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains o_column_archive archive all in column pattern", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 40,
+      "category": "bulk-action-multi-select",
+      "prompt": "In Odoo list view, select 3 specific records using checkboxes (with Shift/Ctrl modifier), then use the Action menu to bulk-archive them. Verify the number of selected records before applying the action.",
+      "expected_output": "playwright-cli commands for multi-select checkboxes, bulk archive action, and selected count verification",
+      "assertions": [
+        {"text": "SKILL.md contains multi-select checkbox pattern with shift/ctrl modifier", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains bulk archive or bulk delete action pattern", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains selected count verification (.o_list_record_selector input:checked)", "type": "content_match", "weight": 0.8},
+        {"text": "SKILL.md contains .o_list_button_action action menu trigger", "type": "content_match", "weight": 1.0}
+      ]
+    },
+    {
+      "id": 41,
+      "category": "chatter-attachment-upload",
+      "prompt": "In Odoo contact form with chatter, attach a PDF document to the chatter thread using the paperclip/attachment button. Post a short message alongside the attachment.",
+      "expected_output": "playwright-cli commands for attachment upload in chatter with file input",
+      "assertions": [
+        {"text": "SKILL.md contains chatter attachment button (.o_attachment_button)", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains input[type='file'] for attachment upload in chatter", "type": "content_match", "weight": 1.0},
+        {"text": "SKILL.md contains send attachment pattern in o_chatter", "type": "content_match", "weight": 0.8}
+      ]
+    }
+  ]
+}

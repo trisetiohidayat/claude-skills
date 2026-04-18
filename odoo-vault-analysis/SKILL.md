@@ -22,9 +22,9 @@ Skill ini menganalisis Odoo 19 dengan membaca **vault Obsidian** (dokumentasi) d
 ## Vault & Source Code Paths
 
 ```
-VAULT_PATH       = ~/Obsidian Vault/Odoo 19
-ODOO_SOURCE_CE   = ~/odoo/odoo19/odoo
-ODOO_SOURCE_SUQMA = ~/odoo/odoo19-suqma/odoo
+VAULT_PATH         = ~/odoo-vaults/odoo-19
+ODOO_SOURCE_CE     = ~/odoo/odoo19/odoo
+ODOO_SOURCE_SUQMA  = ~/odoo/odoo19-suqma/odoo
 ```
 
 ## Vault Structure (untuk mapping keyword ke file)
@@ -41,6 +41,7 @@ ODOO_SOURCE_SUQMA = ~/odoo/odoo19-suqma/odoo
 | Patterns | `Patterns/Security Patterns.md` | ACL CSV, ir.rule, field groups |
 | Tools | `Tools/ORM Operations.md` | search(), browse(), create(), domain operators |
 | Tools | `Tools/Modules Inventory.md` | 304 modules catalog |
+| Tools | `Tools/Export Import Mechanism.md` | export_data(), load(), __ensure_xml_id(), ir_model_data |
 | Snippets | `Snippets/Model Snippets.md` | Code templates model |
 | Snippets | `Snippets/Controller Snippets.md` | Code templates controller |
 | New Features | `New Features/What's New.md` | Odoo 18→19 changes |

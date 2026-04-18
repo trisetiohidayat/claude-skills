@@ -1,0 +1,6 @@
+commit	skill_eval_score	pass_rate	coherence	status	description	purpose
+baseline	1.800	1.000	0.800	baseline	v6-final	100% pass rate — all 41 evals pass, coherence=0.800, score ceiling reached
+cycle-1	1.800	1.000	0.800	keep	kanban-advanced-toggle-colors	E39: o_kanban_colorpicker, o_column_archive — all assertions pass
+cycle-2	1.800	1.000	0.800	keep	bulk-multi-select-action	E40: multi-select checkboxes, bulk archive, selected count
+cycle-3	1.800	1.000	0.800	keep	chatter-attachment-upload	E41: input[type=file] attachment upload in chatter
+cycle-4	1.800	1.000	0.800	keep	rpc-json-endpoint-debug	E35/E36: JSON-RPC fetch(), o_readonly_modifier debugging

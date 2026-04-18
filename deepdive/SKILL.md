@@ -1,10 +1,13 @@
 ---
-name: autoresearch-planner
+name: deepdive
 description: >
-  TRIGGER every time the user says "autoresearch", "do autonomous research",
-  "research X autonomously", "plan research on Y", or asks to investigate a
-  topic deeply and comprehensively. Also triggers when the user says "research this"
-  or "do a deep dive on [topic]" without specifying scope.
+  One-shot deep research session on a specific topic. TRIGGER when user says
+  "/deepdive", "deep dive on X", "riset mendalam tentang X", "research X in depth",
+  "L4 research on X", "buat halaman komprehensif tentang X", or asks to investigate
+  a topic thoroughly in a single focused session.
+
+  Do NOT trigger for "autoresearch", "keep researching", "never stop" — those go to
+  /autoresearch (the autonomous loop). This skill runs once, confirms a plan, then stops.
 
   TOPIC-AGNOSTIC — works for any domain. For Odoo-specific research (Odoo source
   code, Odoo modules, Odoo vault), use the separate odoo-vault-researcher skill

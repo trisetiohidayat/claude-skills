@@ -75,7 +75,7 @@ You are helping the user initialize a new Odoo project from scratch.
    c. **Create .vscode/launch.json**:
    - Template based on project/suqma/.vscode/launch.json
    - Set name to "Odoo {PROJECT_NAME} {VERSION}"
-   - Set python to venv python (create venv if needed: `python3 -m venv venv`)
+   - **IMPORTANT**: Point python to project directory's venv (e.g., `${workspaceFolder}/venv/bin/python`)
    - Set program path to cloned Odoo odoo-bin
    - Set config file path to created odoo.conf
    - Include common args: --dev=xml, --http-port (use unique port like 8069 + project hash)
@@ -109,12 +109,20 @@ You are helping the user initialize a new Odoo project from scratch.
    - Setup instructions
    - Repository links
 
-9. **Create Python virtual environment**:
+9. **Create Python virtual environment in project directory**:
    ```bash
+   # Create venv IN the project directory (not in Odoo base!)
    python3 -m venv venv
    source venv/bin/activate
+
+   # Install requirements from Odoo base's requirements.txt
    pip install -r {odoo_path}/requirements.txt
    ```
+
+   **IMPORTANT**: The venv MUST be created inside the project directory (e.g., `/path/to/myproject/venv/`), NOT in the Odoo base folder. This ensures:
+   - Each project has its own isolated Python environment
+   - Dependencies don't conflict between projects
+   - Easy to delete/recreate without affecting Odoo base
 
 10. **Summary**:
     Show what was created:
@@ -148,7 +156,7 @@ Version: 17.0
 │   └── skills/
 │       └── odoo-init.md
 ├── data/
-├── venv/
+├── venv/                        # <-- venv di project directory ini
 ├── addons/
 │   ├── duniatex-core/
 │   └── duniatex-extra/
@@ -162,7 +170,7 @@ Version: 17.0
 
 ### Next Steps:
 1. Activate virtual environment: source venv/bin/activate
-2. Install dependencies: pip install -r /Users/tri-mac/odoo/odoo17-duniatex/odoo/requirements.txt
+2. (Dependencies sudah terinstall dari requirements.txt saat inisialisasi)
 3. Create PostgreSQL database: createdb duniatex
 4. Run Odoo: Use F5 in VS Code or: python /Users/tri-mac/odoo/odoo17-duniatex/odoo/odoo-bin -c odoo.conf
 ```

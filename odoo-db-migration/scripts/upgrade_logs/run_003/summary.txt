@@ -1,0 +1,4 @@
+run_003 | Thu Apr 16 16:09:36 WIB 2026 | FAILED
+  Errors: 0 module, 0 view, 0 column, 0 table, 0 constraint, 0 l10n
+  Fix: /Users/tri-mac/.claude/skills/odoo-module-migration/scripts/upgrade_logs/run_003/fix_run003.sql
+  Next run: run_004

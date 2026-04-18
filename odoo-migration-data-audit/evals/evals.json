@@ -1,0 +1,41 @@
+{
+  "skill_name": "odoo-migration-data-audit",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "jalankan full audit data migration v15 ke v19 untuk project roedl",
+      "expected_output": "Markdown report dengan Phase 1-7 lengkap, including: model overview table, schema changes, data integrity issues, accounting balance sheet comparison dengan diff %, lost data detection, action items",
+      "files": [],
+      "expectations": [
+        "Skill menggunakan MCP instance roedl-odoo15 dan roedl-odoo19-local",
+        "Phase 4 (Accounting Balance) dijalankan dengan query grand_total dan balance by account type",
+        "Report disimpan di docs/v19-comparison/",
+        "Ada action items dengan prioritas (Critical/High/Medium)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "cek accounting balance sheet antara v15 dan v19, pastikan tidak ada transaksi yang hilang",
+      "expected_output": "Balance sheet comparison table dengan: total moves, total lines, grand debit/credit, balance by account type (Asset, Liability, Equity, Revenue, Expense), diff % untuk masing-masing",
+      "files": [],
+      "expectations": [
+        "Query grand_total dijalankan di kedua database",
+        "Balance comparison table dengan Diff dan Diff % columns",
+        "Tolerance 0.01% untuk rounding",
+        "Transaction gap detection untuk accounts dengan discrepancy"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "audit data integrity untuk res.partner dan res.partner.bank, cek orphan records dan null values",
+      "expected_output": "Data integrity report dengan: orphan bank accounts (company_id NULL), partners dengan (deleted) suffix, customers tanpa email, duplicate detection",
+      "files": [],
+      "expectations": [
+        "SQL queries untuk orphan detection dijalankan",
+        "NULL percentage per critical field",
+        "Severity classification (Critical/High/Medium)",
+        "Fix recommendations untuk setiap issue"
+      ]
+    }
+  ]
+}

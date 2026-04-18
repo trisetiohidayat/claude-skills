@@ -27,7 +27,7 @@ description: |
   - "create a vault for Python FastAPI" — ❌ NO Odoo
 
   If the user says "autoresearch" without specifying Odoo, use the general
-  autoresearch-planner skill instead (not this one).
+  deepdive skill instead (not this one).
 commands:
   - /vault-research [version] [options] - Start research for specified version
   - /vault-stop - Stop current research
