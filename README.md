@@ -2,6 +2,26 @@
 
 A collection of 180 Claude Code skills for Odoo 19 development, migration, operations, and general productivity.
 
+## Install
+
+```bash
+npx skills add trisetiohidayat/claude-skills
+```
+
+Install satu skill spesifik:
+
+```bash
+npx skills add trisetiohidayat/claude-skills --skill odoo19-model-new
+```
+
+Install semua skills global:
+
+```bash
+npx skills add trisetiohidayat/claude-skills -g --all
+```
+
+---
+
 ## Quick Start
 
 **Always activate these FIRST before Odoo work:**
